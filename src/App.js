@@ -232,7 +232,7 @@ function App() {
         gap: "20px",
         alignItems: "center",
         minHeight: "100vh", // Ensure the gradient covers the entire viewport
-        background: "#D3D3D3", // Gradient background
+        background: "white", // Gradient background
         // backgroundRepeat: "no-repeat",
         "@media (min-width: 1024px)": {
           flexDirection: "row", // Switch to horizontal layout for larger screens
