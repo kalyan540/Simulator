@@ -282,7 +282,7 @@ function App() {
             // marginRight:"1000px",
           }}
         >
-          OPC Plant Simulator
+          Plant Simulator
         </Typography>
 
         {/* Plant Selector */}
