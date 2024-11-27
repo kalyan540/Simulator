@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { PlantSelector } from "./PlantSelector";
 import { DeviceSelector } from "./DeviceSelector";
 import { ParametersDisplay } from "./ParametersDisplay";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 function App() {
-  const basePath = process.env.REACT_APP_API_BASE_URL;
+  const [basePath, setBasePath] = useState(process.env.REACT_APP_API_BASE_URL);;
   const [plants, setPlants] = useState([]);
   const [plantDevices, setPlantDevices] = useState([]);
   const [plantFreq, setPlantFreq] = useState();
@@ -13,6 +13,17 @@ function App() {
   const [selectedDevice, setSelectedDevice] = useState("");
   const [selectedPlantDeviceDetails, setSelectedPlantDeviceDetails] = useState(null);
   const interval = useRef();
+
+  // Reset and re-fetch data when the URL changes
+  useEffect(() => {
+    if (basePath) {
+      setPlants([]); // Clear plants data to force re-fetch
+      setPlantDevices([]); // Clear device data to force re-fetch
+      setSelectedPlant(""); // Reset selected plant to trigger new fetch
+      setSelectedDevice(""); // Reset selected device to trigger new fetch
+      setSelectedPlantDeviceDetails(null); // Reset device details to trigger new fetch
+    }
+  }, [basePath]); // This will trigger whenever basePath (the URL) changes
 
   // Fetch plant data
   const fetchPlants = async () => {
@@ -164,18 +175,22 @@ function App() {
       }
     }
   }, [selectedPlant, selectedDevice, selectedPlantDeviceDetails]);
+  
+  const handleUrlChange = (newUrl) => {
+    setBasePath(newUrl); // Update the basePath with the new URL
+  };
 
   useEffect(() => {
     fetchPlants();
-  }, []);
+  }, [basePath]);
 
   useEffect(() => {
     selectedPlant && fetchPlantDevices();
-  }, [selectedPlant]);
+  }, [selectedPlant, basePath]);
 
   useEffect(() => {
     selectedDevice && fetchPlantDeviceDetails();
-  }, [selectedDevice]);
+  }, [selectedDevice, basePath]);
 
   useEffect(() => {
     if (plants.length) {
@@ -206,20 +221,95 @@ function App() {
   return (
     <Box
       sx={{
+        // backgroundImage: "url('/chemical-plant.jpg')", // Replace with your image URL
+        // backgroundRepeat: "no-repeat",
+        // backgroundSize: "cover", // Ensures the image covers the entire background
+        // backgroundPosition: "center",
+        width: "100%",
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
+        flexDirection: "column", // Stack elements vertically for better responsiveness
+        padding: "20px",
+        gap: "20px",
         alignItems: "center",
-        gap: "10px",
+        minHeight: "100vh", // Ensure the gradient covers the entire viewport
+        background: "#D3D3D3", // Gradient background
+        // backgroundRepeat: "no-repeat",
+        "@media (min-width: 1024px)": {
+          flexDirection: "row", // Switch to horizontal layout for larger screens
+          alignItems: "flex-start",
+        },
       }}
     >
-      <PlantSelector plants={plants || []} selected={selectedPlant} onSelect={setSelectedPlant} />
-      {selectedPlant && plantFreq && (
-        <DeviceSelector devices={plantDevices} freq={plantFreq} selected={selectedDevice} onSelect={setSelectedDevice} onFreqChange={handleFreqChange} />
-      )}
-      {selectedPlantDeviceDetails && (
-        <ParametersDisplay parameters={selectedPlantDeviceDetails} setParameters={setSelectedPlantDeviceDetails} handleCheckClick={handleCheckClick} handleSimulateClick={handleSimulateClick} />
-      )}
+      {/* Bioreactor Image */}
+      <Box
+        sx={{
+          width: "100%", // Full width for smaller screens
+          maxWidth: "600px",
+          height: "300px",
+          backgroundImage: "url(/Bioreactor-photo.jpeg)",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          opacity: 0.8,
+          "@media (min-width: 1024px)": {
+            width: "40%", // 40% width for larger screens
+            height: "80vh",
+            marginTop: "220px",
+          },
+        }}
+      />
+
+      {/* Main Content */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          width: "100%", // Ensure full width for smaller screens
+          maxWidth: "600px",
+        }}
+      >
+        {/* Title */}
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            color: "black",
+            fontWeight: "bold",
+            alignItems: "center",
+            width: "100%",
+            marginLeft:"-20px",
+            // marginRight:"1000px",
+          }}
+        >
+          OPC Plant Simulator
+        </Typography>
+
+        {/* Plant Selector */}
+        <PlantSelector plants={plants || []} selected={selectedPlant} onSelect={setSelectedPlant} />
+
+        {/* Device Selector */}
+        {selectedPlant && plantFreq && (
+          <DeviceSelector
+            devices={plantDevices}
+            freq={plantFreq}
+            selected={selectedDevice}
+            onSelect={setSelectedDevice}
+            onFreqChange={handleFreqChange}
+          />
+        )}
+
+        {/* Parameters Display */}
+        {selectedPlantDeviceDetails && (
+          <ParametersDisplay
+            parameters={selectedPlantDeviceDetails}
+            setParameters={setSelectedPlantDeviceDetails}
+            handleCheckClick={handleCheckClick}
+            handleSimulateClick={handleSimulateClick}
+            handleUrlChange={handleUrlChange}
+          />
+        )}
+      </Box>
     </Box>
   );
 }

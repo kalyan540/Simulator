@@ -8,7 +8,7 @@ export const PlantSelector = ({ plants, selected, onSelect }) => {
 
   return (
     <Box
-      sx={{ display: "flex", justifyContent: "space-between", width: "300px" }}
+      sx={{ display: "flex", justifyContent: "space-between", width: "300px", marginLeft: "250px"}}
     >
       <InputLabel
         id="plant-label"

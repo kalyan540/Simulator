@@ -5,10 +5,8 @@ import {
   Box,
   InputLabel,
   TextField,
-  IconButton,
+  Button,
 } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
-import BuildIcon from "@mui/icons-material/Build";
 
 export const DeviceSelector = ({
   devices,
@@ -17,23 +15,28 @@ export const DeviceSelector = ({
   onSelect,
   onFreqChange,
 }) => {
-  const [isUpdate, setIsUpdate] = useState(false);
-  const [currentFreq, setCurrentFreq] = useState(freq);
+  const [isUpdate, setIsUpdate] = useState(false); // Tracks if the frequency is being updated
+  const [currentFreq, setCurrentFreq] = useState(freq); // Local frequency state
+  const [buttonText, setButtonText] = useState("Update"); // Tracks button text state
+
   const handleChange = (event) => {
-    onSelect(event.target.value);
+    onSelect(event.target.value); // Calls parent `onSelect` function when device is changed
   };
 
   const handleFreqChange = (event) => {
-    if (event.target.value <= 0) {
-      setCurrentFreq(1);
-    } else {
-      setCurrentFreq(event.target.value);
-    }
+    const newFreq = Math.max(1, event.target.value); // Prevents frequency from being less than 1
+    setCurrentFreq(newFreq); // Updates the local frequency state
   };
 
   const handleUpdateFreq = () => {
-    onFreqChange(currentFreq);
-    setIsUpdate(false);
+    onFreqChange(currentFreq); // Calls parent `onFreqChange` function with the current frequency
+    setButtonText("Updated"); // Sets button text to "Updated"
+    setIsUpdate(false); // Disables editing mode
+
+    // Revert button text back to "Update" after 5 seconds
+    setTimeout(() => {
+      setButtonText("Update");
+    }, 2000);
   };
 
   return (
@@ -45,11 +48,13 @@ export const DeviceSelector = ({
         alignItems: "space-between",
       }}
     >
+      {/* Device Selector */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           width: "300px",
+          marginLeft: "250px",
         }}
       >
         <InputLabel
@@ -75,16 +80,19 @@ export const DeviceSelector = ({
           ))}
         </Select>
       </Box>
+
+      {/* Frequency Update Section */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           width: "300px",
           gap: "20px",
+          marginLeft: "250px"
         }}
       >
         <InputLabel
-          id="device-label"
+          id="freq-label"
           sx={{
             display: "flex",
             justifyContent: "center",
@@ -103,13 +111,26 @@ export const DeviceSelector = ({
             sx={{ height: "40px" }}
           />
           {isUpdate ? (
-            <IconButton onClick={handleUpdateFreq}>
-              <CheckIcon sx={{ color: "green" }} />
-            </IconButton>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleUpdateFreq}
+              sx={{ marginLeft: "10px" }}
+            >
+              {buttonText}
+            </Button>
           ) : (
-            <IconButton onClick={() => setIsUpdate(true)}>
-              <BuildIcon />
-            </IconButton>
+            <Button
+              variant="outlined"
+              onClick={() => setIsUpdate(true)}
+              sx={{
+                backgroundColor: "black",
+                color: "white",
+                marginLeft: "10px",
+              }}
+            >
+              {buttonText}
+            </Button>
           )}
         </div>
       </Box>
