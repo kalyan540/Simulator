@@ -246,7 +246,7 @@ function App() {
           width: "100%", // Full width for smaller screens
           maxWidth: "600px",
           height: "300px",
-          backgroundImage: "url(/Bioreactor-photo.jpeg)",
+          backgroundImage: "url(/bioreactorV2.gif)",
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
